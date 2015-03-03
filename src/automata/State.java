@@ -57,7 +57,7 @@ public class State implements Serializable {
 	}
 
 	public State(int id,String anotherId,Automaton automaton) {
-		this.point = null;
+		this.point = new Point();
 		this.id = id;
 		this.automaton = automaton;
 		this.anotherId = anotherId;

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="mod_code/action/|mod_code/dk/brics/automaton/|mod_code/editor/|mod_code/ee/ut/math/automaton/approximate/|mod_code/ee/ut/math/automaton/core/|mod_code/ee/ut/math/automaton/dfa/|mod_code/ee/ut/math/automaton/nfa/|mod_code/ee/ut/math/automaton/regex/|mod_code/ee/ut/math/automaton/visual/|mod_code/menu/|mod_code/regular/|mod_code/Solution/|mod_code/|mod_code/dk/brics/|enhanced1/|enhanced2/|enhanced2/action/|enhanced2/dk/brics/automaton/|enhanced2/editor/|enhanced2/ee/ut/math/automaton/approximate/|enhanced2/ee/ut/math/automaton/core/|enhanced2/ee/ut/math/automaton/dfa/|enhanced2/ee/ut/math/automaton/nfa/|enhanced2/ee/ut/math/automaton/regex/|enhanced2/ee/ut/math/automaton/visual/|enhanced2/menu/|enhanced2/regular/|enhanced2/Solution/" kind="src" path="src"/>
+	<classpathentry including="Debug_Code.java|Test_Debugger.java" kind="src" path="Debug"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/ME/E Books/Engineering/Sem 8/Final Year Project/Final Jflap/Jflap Enhanced/Workspace/lib_files_for_eclipse/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="D:/ME/E Books/Engineering/Sem 8/Final Year Project/Final Jflap/Jflap Enhanced/Workspace/lib_files_for_eclipse/org.jar"/>
+	<classpathentry kind="lib" path="D:/ME/E Books/Engineering/Sem 8/Final Year Project/Final Jflap/Jflap Enhanced/Workspace/lib_files_for_eclipse/jmathplot.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
