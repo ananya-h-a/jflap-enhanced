@@ -116,6 +116,7 @@ public class DFACrossProduct
 		if(tempAutomaton == null)
 		{
 			//hack for bad language
+			System.out.println("Hack");
 			result = (FiniteStateAutomaton) minimizer.getMinimizeableAnalysisAutomaton(result);
 		}
 		else

@@ -13,6 +13,7 @@ import org.math.plot.Plot2DPanel;
 import enhanced.AnalysisEngine;
 import enhanced.DFACrossProduct;
 import enhanced.FinitenessDetector;
+import enhanced.NewMinimizer;
 import enhanced.OpenRepositoryAutomaton;
 import enhanced.VectorGenerator;
 import enhanced.XMLReader;
@@ -41,6 +42,7 @@ public class Test_Debugger
 		//FiniteStateAutomaton result = (FiniteStateAutomaton) OpenRepositoryAutomaton.getAutomaton(11);
 		
 		//DFACrossProduct crossProduct = new DFACrossProduct();
+		/*
 		List<String> alphabet = new ArrayList<String>();
 		alphabet.add("0");
 		alphabet.add("1");
@@ -64,7 +66,7 @@ public class Test_Debugger
 		System.out.println(detector.isFinite(cp));
 		System.out.println(cp.toString());*/
 		
-		FiniteStateAutomaton testAutomaton = new FiniteStateAutomaton();
+		/*FiniteStateAutomaton testAutomaton = new FiniteStateAutomaton();
 		State a = testAutomaton.createStateWithId(new Point(), 1);
 		State b = testAutomaton.createStateWithId(new Point(), 2);
 		State c = testAutomaton.createStateWithId(new Point(), 3);
@@ -89,7 +91,7 @@ public class Test_Debugger
 		System.out.println(generator.generateVector(testAutomaton,testAutomaton.getStateWithID(3)));*/
 		//System.out.println(detector.isFinite(testAutomaton));
 		
-		
+		/*
 		Plot2DPanel plot = new  Plot2DPanel();
 		double [] x = {1,2,3};
 		double [] y = {1,2,3};
@@ -103,7 +105,29 @@ public class Test_Debugger
 		frame.add(plot1);
 		frame.add(plot);
 		//frame.setContentPane(plot1);
-		frame.setVisible(true);
+		frame.setVisible(true);*/
+		/*FiniteStateAutomaton cp = crossProduct.getDFACrossProduct(result, result, alphabet);
+		FinitenessDetector detector = new FinitenessDetector();
+		System.out.println(detector.isFinite(cp));
+		System.out.println(cp.toString());*/
+		
+		FiniteStateAutomaton testAutomaton = new FiniteStateAutomaton();
+		State a = testAutomaton.createStateWithId(new Point(), 0);
+		State b = testAutomaton.createStateWithId(new Point(), 1);
+		State c = testAutomaton.createStateWithId(new Point(), 2);
+		testAutomaton.setInitialState(a);
+		testAutomaton.addFinalState(c);
+		testAutomaton.addFinalState(b);
+
+		testAutomaton.addTransition(new FSATransition(a, c, "a"));
+		testAutomaton.addTransition(new FSATransition(a, b, "b"));
+		testAutomaton.addTransition(new FSATransition(b, b, "a"));
+		testAutomaton.addTransition(new FSATransition(b, c, "b"));
+		testAutomaton.addTransition(new FSATransition(c, c, "a"));
+		testAutomaton.addTransition(new FSATransition(c, c, "b"));
+		
+		NewMinimizer minimizer = new NewMinimizer();
+		minimizer.getMinimizedAutomaton(testAutomaton);
 		
 	}
 	
