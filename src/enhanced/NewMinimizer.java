@@ -34,7 +34,7 @@ public class NewMinimizer {
 		{
 			a.removeState(unreachableStates[k]);
 		}
-		//System.out.println(a);
+		System.out.println(a);
 		addTrapState(a);
 		//System.out.println(a);
 		List<String> mergeableStates = getMergeableStates(a);
@@ -214,6 +214,7 @@ public class NewMinimizer {
 		boolean shouldCompute = true;
 		while(shouldCompute)
 		{
+			//System.out.println("Here");
 			shouldCompute = false;
 			for(String key : mergeableMap.keySet())
 			{
@@ -246,9 +247,11 @@ public class NewMinimizer {
 							}
 							int newCompatibility = mergeableMap.get(newkey);
 							int currentComptibilty = mergeableMap.get(key);
-							if(currentComptibilty != newCompatibility)
+							if(newCompatibility == 0 && currentComptibilty != newCompatibility)
 							{
+								//System.out.println(key+" and "+newkey);
 								mergeableMap.put(key,newCompatibility);
+								//System.out.println(mergeableMap);
 								shouldCompute = true;
 							}
 						}
