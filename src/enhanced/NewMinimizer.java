@@ -24,8 +24,9 @@ public class NewMinimizer {
 	{
 		 retriever = new FSAAlphabetRetriever();
 	}
-	public void getMinimizedAutomaton(FiniteStateAutomaton a)
+	public FiniteStateAutomaton getMinimizedAutomaton(FiniteStateAutomaton b)
 	{
+		FiniteStateAutomaton a = (FiniteStateAutomaton)b.clone();
 		alphabet = retriever.getAlphabet(a);
 		UnreachableStatesDetector usd = new UnreachableStatesDetector(a);
 		State[] unreachableStates = usd.getUnreachableStates();
@@ -33,10 +34,12 @@ public class NewMinimizer {
 		{
 			a.removeState(unreachableStates[k]);
 		}
+		//System.out.println(a);
 		addTrapState(a);
+		//System.out.println(a);
 		List<String> mergeableStates = getMergeableStates(a);
 		List<List<Integer>> partitions = getMergeableSet(mergeableStates); 
-		//System.out.println(partitions);
+		System.out.println(partitions);
 		for(State s : a.getStates())
 		{
 			int newid = getPartitionState(s.getID(), partitions);
@@ -66,6 +69,7 @@ public class NewMinimizer {
 			}
 		}
 		//System.out.println(a);
+		return a;
 	}
 	
 	private int getPartitionState(int id,List<List<Integer>> partitions)
@@ -90,15 +94,15 @@ public class NewMinimizer {
 		}
 		if(needsTrapState(a))
 		{
-			//System.out.println("Trap State needed");
+			System.out.println("Trap State needed");
 			State trapState = a.createState(new Point());
-			String [] alphabet = retriever.getAlphabet(a);
 			for(State s : a.getStates())
 			{
 				for(String alpha : alphabet)
 				{
 					if(!hasTransition(a, s, alpha))
 					{
+						//System.out.println("Adding transition from "+s+ " on "+alpha);
 						a.addTransition(new FSATransition(s, trapState, alpha));
 					}
 				}
@@ -158,6 +162,7 @@ public class NewMinimizer {
 			FSATransition temp = (FSATransition)t;
 			if(temp.getLabel().equals(alpha))
 			{
+				//System.out.println("Transition is "+temp);
 				return true;
 			}
 		}
@@ -229,6 +234,24 @@ public class NewMinimizer {
 					{
 						shouldCompute = true;
 						mergeableMap.put(key, 0);
+					}
+					else
+					{
+						if(t1.getID() != t2.getID())
+						{
+							String newkey = t1.getID()+":"+t2.getID();
+							if(!mergeableMap.containsKey(newkey))
+							{
+								newkey = t2.getID()+":"+t1.getID();
+							}
+							int newCompatibility = mergeableMap.get(newkey);
+							int currentComptibilty = mergeableMap.get(key);
+							if(currentComptibilty != newCompatibility)
+							{
+								mergeableMap.put(key,newCompatibility);
+								shouldCompute = true;
+							}
+						}
 					}
 				}
 			}

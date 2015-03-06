@@ -27,7 +27,7 @@ public class AnalysisEngine
 	private DFACrossProduct crossProduct;
 	private FSAAlphabetRetriever alphabetRetriever;
 	Set<String> alphabet;
-	private Minimizer minimizer;
+	private NewMinimizer minimizer;
 	public AnalysisEngine(String logFilePath) throws Exception
 	{
 		XMLReader reader = new XMLReader(logFilePath);
@@ -36,7 +36,7 @@ public class AnalysisEngine
 		result = (FiniteStateAutomaton) OpenRepositoryAutomaton.getAutomaton(questionNumber); //need to take care
 		crossProduct = new DFACrossProduct();
 		alphabetRetriever = new FSAAlphabetRetriever();
-		minimizer = new Minimizer();
+		minimizer = new NewMinimizer();
 		alphabet = new HashSet<String>();
 		for(String alpha : alphabetRetriever.getAlphabet(result))
 		{
@@ -81,8 +81,10 @@ public class AnalysisEngine
 		Map<List<Integer>,Integer> vectorDictionary = new HashMap<List<Integer>,Integer>();
 		Set<String> combinedAlphabet = getCombineAlphabet(attempt);
 		VectorGenerator generator = new VectorGenerator(combinedAlphabet);
-		FiniteStateAutomaton minimizedAttempt = getMinimizedAutomaton(attempt);
-		FiniteStateAutomaton minimizedResult = getMinimizedAutomaton(result);
+		//FiniteStateAutomaton minimizedAttempt = getMinimizedAutomaton(attempt);
+		//FiniteStateAutomaton minimizedResult = getMinimizedAutomaton(result);
+		FiniteStateAutomaton minimizedAttempt = minimizer.getMinimizedAutomaton(attempt);
+		FiniteStateAutomaton minimizedResult = minimizer.getMinimizedAutomaton(result);
 		for(State state : minimizedResult.getStates())
 		{
 			List<Integer> vector = generator.generateVector(minimizedResult, state);
@@ -187,7 +189,7 @@ public class AnalysisEngine
 		return combinedAlphabet;
 	}
 	
-	private FiniteStateAutomaton getMinimizedAutomaton(FiniteStateAutomaton automaton)
+	/*private FiniteStateAutomaton getMinimizedAutomaton(FiniteStateAutomaton automaton)
 	{
 		minimizer.initializeMinimizer();
 		try
@@ -205,6 +207,6 @@ public class AnalysisEngine
 		automaton = minimizer.getMinimumDfa(automaton, tree);
 		return automaton;
 		
-	}
+	}*/
 	
 }
