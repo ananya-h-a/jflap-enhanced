@@ -54,7 +54,16 @@ public class StatePlacer {
 		int y = (int) ycoord;
 		return new Point(x, y);
 	}
-
+	
+	
+	public Point getRandomPoint() 
+	{
+		double xcoord = Math.random() * X_MAX;
+		int x = (int) xcoord;
+		double ycoord = Math.random() * Y_MAX;
+		int y = (int) ycoord;
+		return new Point(x, y);
+	}
 	/** The maximum value for the X-coordinate. */
 	protected final static int X_MAX = 600;
 

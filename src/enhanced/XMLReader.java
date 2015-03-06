@@ -19,14 +19,17 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import automata.State;
+import automata.StatePlacer;
 import automata.fsa.FSATransition;
 import automata.fsa.FiniteStateAutomaton;
 public class XMLReader {
 	
 	private Document doc;
+	private StatePlacer placer;
 	public XMLReader(String path)
 	{
 		File fXmlFile = new File(path);
+		placer = new StatePlacer();
 		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder dBuilder = null;
 		try 
@@ -110,7 +113,7 @@ public class XMLReader {
 		{
 			Element state = (Element) states.item(i);
 			int id = Integer.parseInt(state.getElementsByTagName("Id").item(0).getTextContent());
-			State temp = result.createStateWithId(new Point(), id);
+			State temp = result.createStateWithId(placer.getRandomPoint(), id);
 			NodeList attributes = state.getElementsByTagName("Attribute");
 			for(int j=0;j<attributes.getLength();j++)
 			{

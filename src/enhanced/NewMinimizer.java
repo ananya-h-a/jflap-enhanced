@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import automata.State;
+import automata.StatePlacer;
 import automata.Transition;
 import automata.UnreachableStatesDetector;
 import automata.fsa.FSAAlphabetRetriever;
@@ -18,11 +19,13 @@ import automata.fsa.FiniteStateAutomaton;
 
 public class NewMinimizer {
 	
-	FSAAlphabetRetriever retriever;
-	String[] alphabet;
+	private FSAAlphabetRetriever retriever;
+	private String[] alphabet;
+	private StatePlacer placer;
 	public NewMinimizer()
 	{
 		 retriever = new FSAAlphabetRetriever();
+		 placer = new StatePlacer();
 	}
 	public FiniteStateAutomaton getMinimizedAutomaton(FiniteStateAutomaton b)
 	{
@@ -95,7 +98,7 @@ public class NewMinimizer {
 		if(needsTrapState(a))
 		{
 			System.out.println("Trap State needed");
-			State trapState = a.createState(new Point());
+			State trapState = a.createState(placer.getRandomPoint());
 			for(State s : a.getStates())
 			{
 				for(String alpha : alphabet)
