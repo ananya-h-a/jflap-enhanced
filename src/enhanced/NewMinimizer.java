@@ -4,8 +4,10 @@ package enhanced;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import automata.State;
 import automata.Transition;
@@ -33,30 +35,62 @@ public class NewMinimizer {
 		}
 		addTrapState(a);
 		List<String> mergeableStates = getMergeableStates(a);
-		while(mergeableStates.size() > 0)
+		List<List<Integer>> partitions = getMergeableSet(mergeableStates); 
+		//System.out.println(partitions);
+		for(State s : a.getStates())
 		{
-			String key= mergeableStates.get(0);
-			String id[] = key.split(":");
-			int id1 = Integer.parseInt(id[0]);
-			int id2 = Integer.parseInt(id[1]);
-			State s1 = a.getStateWithID(id1);
-			State s2 = a.getStateWithID(id2);
-			
+			int newid = getPartitionState(s.getID(), partitions);
+			if(newid != s.getID())
+			{
+				State mergedState = a.getStateWithID(newid);
+				if(a.isInitialState(s))
+				{
+					a.setInitialState(mergedState);
+				}
+				for(Transition t : a.getTransitionsFromState(s))
+				{
+					FSATransition newTransition = (FSATransition) t ;
+					String label = newTransition.getLabel();
+					if(!hasTransition(a, mergedState, label))
+					{
+						State newToState = a.getStateWithID(getPartitionState(newTransition.getToState().getID(), partitions)); 
+						a.addTransition(new FSATransition(mergedState,newToState, label));
+					}
+				}
+				for(Transition t : a.getTransitionsToState(s))
+				{
+					FSATransition transition = (FSATransition) t;
+					a.addTransition(new FSATransition(transition.getFromState(), mergedState, transition.getLabel()));
+				}
+				a.removeState(s);
+			}
 		}
-		
+		//System.out.println(a);
+	}
+	
+	private int getPartitionState(int id,List<List<Integer>> partitions)
+	{
+		for(List<Integer> partition : partitions)
+		{
+			if(partition.contains(id))
+			{
+				return partition.get(0);
+			}
+		}
+		return id;
 	}
 	
 	public void addTrapState(FiniteStateAutomaton a)
 	{
 		List<State> trapStates = getTrapState(a);
-		System.out.println("Trap states "+trapStates);
+		//System.out.println("Trap states "+trapStates);
 		for(State s : trapStates)
 		{
 			a.removeState(s);
 		}
 		if(needsTrapState(a))
 		{
-			System.out.println("Trap State needed");
+			//System.out.println("Trap State needed");
 			State trapState = a.createState(new Point());
 			String [] alphabet = retriever.getAlphabet(a);
 			for(State s : a.getStates())
@@ -72,7 +106,7 @@ public class NewMinimizer {
 			
 		}
 	}
-	public List<State> getTrapState(FiniteStateAutomaton a)
+	private List<State> getTrapState(FiniteStateAutomaton a)
 	{
 		List<State> trapStates = new ArrayList<State>();
 		
@@ -99,7 +133,7 @@ public class NewMinimizer {
 		return trapStates;
 	}
 	
-	public boolean needsTrapState(FiniteStateAutomaton a)
+	private boolean needsTrapState(FiniteStateAutomaton a)
 	{
 		
 		for(State s : a.getStates())
@@ -108,7 +142,7 @@ public class NewMinimizer {
 			{
 				if(!hasTransition(a,s,alpha))
 				{
-					System.out.println("State "+s+" on "+alpha );
+					//System.out.println("State "+s+" on "+alpha );
 					return true;
 				}
 					
@@ -117,7 +151,7 @@ public class NewMinimizer {
 		}
 		return false;
 	}
-	public boolean hasTransition(FiniteStateAutomaton a, State s , String alpha)
+	private boolean hasTransition(FiniteStateAutomaton a, State s , String alpha)
 	{
 		for(Transition t : a.getTransitionsFromState(s))
 		{
@@ -130,7 +164,7 @@ public class NewMinimizer {
 		return false;
 	}
 	
-	public Transition getTransition(FiniteStateAutomaton a, State s , String alpha)
+	private Transition getTransition(FiniteStateAutomaton a, State s , String alpha)
 	{
 		for(Transition t : a.getTransitionsFromState(s))
 		{
@@ -143,7 +177,7 @@ public class NewMinimizer {
 		return null; //shouldn't get here ideally as trap state has already been added at this point
 	}
 	
-	public List<String> getMergeableStates(FiniteStateAutomaton a)
+	private List<String> getMergeableStates(FiniteStateAutomaton a)
 	{
 		List <String> mergeableStates = new ArrayList<String>();
 		Map<String,Integer> mergeableMap = new HashMap<String,Integer>();
@@ -171,7 +205,7 @@ public class NewMinimizer {
 				}
 			}
 		}
-		System.out.println(mergeableMap);
+		//System.out.println(mergeableMap);
 		boolean shouldCompute = true;
 		while(shouldCompute)
 		{
@@ -206,7 +240,53 @@ public class NewMinimizer {
 				mergeableStates.add(key);
 			}
 		}
-		System.out.println(mergeableStates);
+		//System.out.println(mergeableStates);
 		return mergeableStates;
+	}
+	
+	private List<List<Integer>> getMergeableSet(List<String> mergeableStates)
+	{
+		List<List<Integer>> mergeableSet = new ArrayList<List<Integer>>();
+		while(mergeableStates.size() > 0)
+		{
+			String mergeableState = mergeableStates.get(0);
+			Set<Integer> partition = new HashSet<Integer>();
+			for(String s:  mergeableState.split(":"))
+			{
+				partition.add(Integer.parseInt(s));
+			}
+			int len = partition.size();
+			boolean flag = true;
+			while(flag)
+			{
+				List<String> keysToRemove = new ArrayList<String>();
+				flag = false;
+				for(String key: mergeableStates)
+				{
+					String [] ids = key.split(":");
+					int id1 = Integer.parseInt(ids[0]);
+					int id2 = Integer.parseInt(ids[1]);
+					if(partition.contains(id1) || partition.contains(id2))
+					{
+						partition.add(id1);
+						partition.add(id2);
+						keysToRemove.add(key);
+					}
+				}
+				for(String key: keysToRemove)
+				{
+					mergeableStates.remove(key);
+				}
+				int newlen = partition.size();
+				if(newlen != len)
+				{
+					len = newlen;
+					flag = true;
+				}
+			}
+			mergeableSet.add(new ArrayList<Integer>(partition));
+
+		}
+		return mergeableSet;
 	}
 }
