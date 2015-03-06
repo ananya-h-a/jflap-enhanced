@@ -110,7 +110,7 @@ public class DFACrossProduct
 			
 		}
 		//result = (FiniteStateAutomaton)  UselessStatesDetector.cleanAutomaton(result);
-		Minimizer minimizer = new Minimizer();
+		/*Minimizer minimizer = new Minimizer();
 		minimizer.initializeMinimizer();
 		FiniteStateAutomaton tempAutomaton = (FiniteStateAutomaton)minimizer.getMinimizeableAutomaton(result);
 		if(tempAutomaton == null)
@@ -125,7 +125,9 @@ public class DFACrossProduct
 		}
 		javax.swing.tree.DefaultTreeModel tree = minimizer
 				.getDistinguishableGroupsTree(result);
-		result = minimizer.getMinimumDfa(result, tree);
+		result = minimizer.getMinimumDfa(result, tree);*/
+		NewMinimizer minimizer = new NewMinimizer();
+		result = minimizer.getMinimizedAutomaton(result);
 		return result;
 	}
 	
