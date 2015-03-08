@@ -29,6 +29,7 @@ public class AnalysisEngine
 	private FSAAlphabetRetriever alphabetRetriever;
 	Set<String> alphabet;
 	private NewMinimizer minimizer;
+	private IsFinal instance;
 	public AnalysisEngine(String logFilePath) throws Exception
 	{
 		XMLReader reader = new XMLReader(logFilePath);
@@ -49,6 +50,7 @@ public class AnalysisEngine
 		{
 			alphabet.add(alpha);
 		}
+		 instance = new UnionOfDifferenceLanguage();
 	}
 	
 	public AnalysisEngine()
@@ -124,12 +126,13 @@ public class AnalysisEngine
 	}
 	public List<Double> generateCPMetric()
 	{
+		
 		List<Double> cpMetricList = new ArrayList<Double>();
 		for(int i=0;i < attempts.size();i++)
 		{
 			FiniteStateAutomaton attempt = attempts.get(i);
 			Set <String> combinedAlphabet = getCombineAlphabet(attempt);
-			FiniteStateAutomaton cp = crossProduct.getDFACrossProduct(result, attempt, combinedAlphabet);
+			FiniteStateAutomaton cp = crossProduct.getDFACrossProduct(result, attempt, combinedAlphabet,instance);
 			cpMetricList.add(computeCPMetric(cp));
 		}
 		return cpMetricList;
@@ -142,7 +145,7 @@ public class AnalysisEngine
 		{
 			FiniteStateAutomaton attempt = attempts.get(i);
 			Set<String> combinedAlphabet = getCombineAlphabet(attempt);
-			FiniteStateAutomaton cp = crossProduct.getDFACrossProduct(result, attempt, combinedAlphabet);
+			FiniteStateAutomaton cp = crossProduct.getDFACrossProduct(result, attempt, combinedAlphabet,instance);
 			cpMetricList.add(computeNoDistinctStatesMetric(combinedAlphabet, cp));
 		}
 		return cpMetricList;

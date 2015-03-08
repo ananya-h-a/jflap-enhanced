@@ -19,7 +19,7 @@ import automata.fsa.Minimizer;
 public class DFACrossProduct
 {
 	public  FiniteStateAutomaton getDFACrossProduct(FiniteStateAutomaton a,
-			FiniteStateAutomaton b, Set<String> alphabet)
+			FiniteStateAutomaton b, Set<String> alphabet, IsFinal finalizer)
 	{
 		FiniteStateAutomaton result = new FiniteStateAutomaton();
 		State a0 = a.getInitialState();
@@ -32,7 +32,7 @@ public class DFACrossProduct
 		}
 		State temp = result.createState(getCombinedStateId(a0,b0));
 		result.setInitialState(temp);
-		if(isFinal(a0,b0))
+		if(finalizer.isFinal(a0,b0))
 		{
 			result.addFinalState(temp);
 		}
@@ -101,7 +101,7 @@ public class DFACrossProduct
 				}
 				FSATransition fsaTransition= new FSATransition(stateToProcess, tempState, alpha);
 				result.addTransition(fsaTransition);
-				if(isFinal(to1,to2))
+				if(finalizer.isFinal(to1,to2))
 				{
 					result.addFinalState(tempState);
 				}
@@ -137,7 +137,7 @@ public class DFACrossProduct
 		return combinedId;
 	}
 	
-	public boolean isFinal(State a,State b)
+	/*public boolean isFinal(State a,State b)
 	{
 		boolean condition1, condition2;
 		if (a.getAutomaton() == null)
@@ -157,7 +157,7 @@ public class DFACrossProduct
 			condition2 = b.getAutomaton().isFinalState(b);
 		}
 		return (condition1 && !condition2) || (condition2 & !condition1) ;
-	}
+	}*/
 	
 	public int[] getIds(String id)
 	{
