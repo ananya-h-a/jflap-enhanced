@@ -37,12 +37,12 @@ public class NewMinimizer {
 		{
 			a.removeState(unreachableStates[k]);
 		}
-		System.out.println(a);
+		//System.out.println(a);
 		addTrapState(a);
 		//System.out.println(a);
 		List<String> mergeableStates = getMergeableStates(a);
 		List<List<Integer>> partitions = getMergeableSet(mergeableStates); 
-		System.out.println(partitions);
+		//System.out.println(partitions);
 		for(State s : a.getStates())
 		{
 			int newid = getPartitionState(s.getID(), partitions);
@@ -97,7 +97,7 @@ public class NewMinimizer {
 		}
 		if(needsTrapState(a))
 		{
-			System.out.println("Trap State needed");
+			//System.out.println("Trap State needed");
 			State trapState = a.createState(placer.getRandomPoint());
 			for(State s : a.getStates())
 			{

@@ -93,19 +93,23 @@ public class Test_Debugger
 		
 		/*
 		Plot2DPanel plot = new  Plot2DPanel();
-		double [] x = {1,2,3};
-		double [] y = {1,2,3};
-		plot.addLinePlot("my plot", x, y);
-		x[0] = 4;
+		double [] x = {0,2,2};
+		double [] y = {7,2,2};
+		plot.addLinePlot("Yes", x, y);
+		plot.addScatterPlot("Yes", x, y);
+		plot.includeInBounds(0.0,0.0);
+		//plot.addLinePlot("my plot", x, y);
+		//plot.inc
+		/*x[0] = 4;
 		Plot2DPanel plot1 = new  Plot2DPanel();
-		plot1.addLinePlot("another plot", x, y);
-		JFrame frame = new JFrame("a plot panel");
-		frame.setLayout(new GridLayout(3, 2));
-		frame.add(plot);
-		frame.add(plot1);
-		frame.add(plot);
+		plot1.addLinePlot("another plot", x, y);*/
+		//JFrame frame = new JFrame("a plot panel");
+		//frame.setLayout(new GridLayout(3, 2));
+		//frame.setContentPane(plot);
+		//frame.add(plot1);
+		//frame.add(plot);
 		//frame.setContentPane(plot1);
-		frame.setVisible(true);*/
+		//frame.setVisible(true);
 		/*FiniteStateAutomaton cp = crossProduct.getDFACrossProduct(result, result, alphabet);
 		FinitenessDetector detector = new FinitenessDetector();
 		System.out.println(detector.isFinite(cp));
