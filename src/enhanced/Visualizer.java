@@ -7,7 +7,8 @@ import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
 
-public class Visualizer {
+public class Visualizer 
+{
 
 	public Plot2DPanel getPlot(List<Double> metricList,String title,String XAxisLabel,String YAxisLabel)
 	{

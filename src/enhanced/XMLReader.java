@@ -26,6 +26,8 @@ public class XMLReader {
 	
 	private Document doc;
 	private StatePlacer placer;
+	private long startTime;
+	private TreeMap <Long ,FiniteStateAutomaton> attemptsMap;
 	public XMLReader(String path)
 	{
 		File fXmlFile = new File(path);
@@ -53,6 +55,8 @@ public class XMLReader {
 			e.printStackTrace();
 		}
 		doc.getDocumentElement().normalize();
+		Element element = (Element) doc.getElementsByTagName("windowstarttime").item(0);
+		startTime = Long.parseLong(element.getTextContent());
 		
 	}
 	
@@ -76,7 +80,21 @@ public class XMLReader {
 	
 	public List <FiniteStateAutomaton> getAutomatonsFromXML()
 	{
-		Map <Long ,FiniteStateAutomaton> attemptsMap = new TreeMap<Long,FiniteStateAutomaton>();
+		List <FiniteStateAutomaton> attempts = new ArrayList<FiniteStateAutomaton>();
+		for(Map.Entry<Long, FiniteStateAutomaton> entry : attemptsMap.entrySet())
+		{
+			attempts.add(entry.getValue());
+		}
+		return attempts;
+	}
+	
+	private TreeMap<Long,FiniteStateAutomaton> getAttemptsMap()
+	{
+		return attemptsMap;
+	}
+	private void setAttemptsMap()
+	{
+		TreeMap <Long ,FiniteStateAutomaton> attemptsMap = new TreeMap<Long,FiniteStateAutomaton>();
 		NodeList testAgainstSolution = doc.getElementsByTagName("TestAgainstSolution");
 		NodeList testAgainstCode = doc.getElementsByTagName("TestAgainstCode");
 		NodeList testAgainstGUI = doc.getElementsByTagName("TestAgainstGUI");
@@ -97,12 +115,7 @@ public class XMLReader {
 			}
 			
 		}
-		List <FiniteStateAutomaton> attempts = new ArrayList<FiniteStateAutomaton>();
-		for(FiniteStateAutomaton fs : attemptsMap.values())
-		{
-			attempts.add(fs);
-		}
-		return attempts;
+		this.attemptsMap = attemptsMap;
 	}
 	public FiniteStateAutomaton constructAutomaton(Node automaton)
 	{
