@@ -23,6 +23,7 @@ import automata.graph.FSAEqualityChecker;
 public class AnalysisEngine 
 {
 	private List<FiniteStateAutomaton> attempts;
+	private List<Double> ts;
 	private FiniteStateAutomaton result;
 	private DFACrossProduct crossProduct;
 	private FSAAlphabetRetriever alphabetRetriever;
@@ -32,6 +33,12 @@ public class AnalysisEngine
 	{
 		XMLReader reader = new XMLReader(logFilePath);
 		attempts= reader.getAutomatonsFromXML();
+		ts = new ArrayList<Double>();
+		List<Long> temp = reader.getTimeStamps();
+		for(Long t: temp)
+		{
+			ts.add((double)(t-reader.getStartTime())/ 1000);
+		}
 		int questionNumber = reader.getQuestionNumberFromXML();
 		result = (FiniteStateAutomaton) OpenRepositoryAutomaton.getAutomaton(questionNumber); //need to take care
 		crossProduct = new DFACrossProduct();
@@ -161,15 +168,15 @@ public class AnalysisEngine
 		JFrame frame = new JFrame("Analysis Panel");
 		frame.setLayout(new GridLayout(2, 2));
 		List<Double> cpmetrics = generateCPMetric();
-		Plot2DPanel plot1 = visualizer.getPlot(cpmetrics, 
+		Plot2DPanel plot1 = visualizer.getPlot(ts,cpmetrics, 
 				"Size complexity metric", "Attempts", "Number of states in Cross Product");
 		
 		cpmetrics = generateNoDistinctStatesMetric();
-		Plot2DPanel plot2 = visualizer.getPlot(cpmetrics, 
+		Plot2DPanel plot2 = visualizer.getPlot(ts,cpmetrics, 
 				"Distinct States complexity metric", "Attempts", "Number of distinct states in Cross Product");
 		
 		cpmetrics = generateVectorDistance();
-		Plot2DPanel plot3 = visualizer.getPlot(cpmetrics, 
+		Plot2DPanel plot3 = visualizer.getPlot(ts,cpmetrics, 
 				"Vector Distance Metric", "Attempts", "Normalized distance");
 		
 		frame.add(plot1);

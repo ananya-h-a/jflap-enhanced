@@ -10,7 +10,7 @@ import org.math.plot.Plot2DPanel;
 public class Visualizer 
 {
 
-	public Plot2DPanel getPlot(List<Double> metricList,String title,String XAxisLabel,String YAxisLabel)
+	public Plot2DPanel getPlot(List<Double> timestamps,List<Double> metricList,String title,String XAxisLabel,String YAxisLabel)
 	{
 		Plot2DPanel panel = new Plot2DPanel();
 		int size = metricList.size(); 
@@ -18,7 +18,7 @@ public class Visualizer
 		double [] y = new double[size];
 		for(int i = 0; i< size ; i++)
 		{
-			x[i] = i+1;
+			x[i] = timestamps.get(i);
 			y[i] = metricList.get(i);
 		}
 		panel.addLinePlot(title, x, y);

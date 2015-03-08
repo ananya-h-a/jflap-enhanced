@@ -57,7 +57,7 @@ public class XMLReader {
 		doc.getDocumentElement().normalize();
 		Element element = (Element) doc.getElementsByTagName("windowstarttime").item(0);
 		startTime = Long.parseLong(element.getTextContent());
-		
+		this.setAttemptsMap();
 	}
 	
 	public int getQuestionNumberFromXML()
@@ -86,6 +86,16 @@ public class XMLReader {
 			attempts.add(entry.getValue());
 		}
 		return attempts;
+	}
+	
+	public List <Long> getTimeStamps()
+	{
+		List<Long> tsList = new ArrayList<Long>();
+		for(Map.Entry<Long, FiniteStateAutomaton> entry : attemptsMap.entrySet())
+		{
+			tsList.add(entry.getKey());
+		}
+		return tsList;
 	}
 	
 	private TreeMap<Long,FiniteStateAutomaton> getAttemptsMap()
@@ -158,5 +168,9 @@ public class XMLReader {
 		}
 		
 		return result;
+	}
+	public long getStartTime()
+	{
+		return startTime;
 	}
 }
