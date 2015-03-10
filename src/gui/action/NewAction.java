@@ -45,6 +45,7 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import enhanced.AnalysisEngine;
+import enhanced.Preprocessor;
 import enhanced.ViewAttempts;
 import enhanced.XMLReader;
 import enhanced.action.CryptoException;
@@ -380,16 +381,17 @@ public class NewAction extends RestrictedAction {
 						frame.setResizable(false);
 						
 						JButton button1 = new JButton("Add Problem to Repository");
-						JButton button2 = new JButton("Visualize Trace");
-						JButton button3 = new JButton("Create a Graded Quiz");
+						//JButton button2 = new JButton("Visualize Trace");
+						//JButton button3 = new JButton("Create a Graded Quiz");
 						JButton button4 = new JButton("Analyze logs");
 						JButton button5 = new JButton("View Attempts");
+						JButton button6 = new JButton("Preprocess");
 						frame.add(button1);
-						frame.add(button2);
-						frame.add(button3);
+						//frame.add(button2);
+						//frame.add(button3);
 						frame.add(button4);
 						frame.add(button5);
-
+						frame.add(button6);
 					button1.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							FiniteStateAutomaton fsa = new FiniteStateAutomaton();
@@ -399,7 +401,7 @@ public class NewAction extends RestrictedAction {
 						}
 					});
 
-					button2.addActionListener(new ActionListener() {
+					/*button2.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							 Object[] possibleValues = { "Visualize Xml", "Visualize Encrypted Xml","Decode Encrypted Xml" };
 							 Object selectedValue = JOptionPane.showInputDialog(null, "Choose an Action",
@@ -438,7 +440,7 @@ public class NewAction extends RestrictedAction {
 							JOptionPane.showMessageDialog(null, "This feature is currently being Updated! Please Bear With Us.");
 							frame.dispose();
 						}
-					});
+					});*/
 					
 					
 					button4.addActionListener(new ActionListener() 
@@ -491,6 +493,36 @@ public class NewAction extends RestrictedAction {
 					        	ViewAttempts viewer = new ViewAttempts();
 					        	viewer.viewAttempts(path);
 					        }
+						}
+					});
+					
+					button6.addActionListener(new ActionListener() 
+					{
+						
+						@Override
+						public void actionPerformed(ActionEvent arg0) 
+						{
+							// TODO Auto-generated method stub
+							File workingDirectory = new File(System.getProperty("user.dir"));
+							JFileChooser chooser = new JFileChooser();
+							chooser.setCurrentDirectory(workingDirectory);
+							chooser.setDialogTitle("Choose Log Directory");
+							chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							int val = chooser.showOpenDialog(null);
+					        if(val == JFileChooser.APPROVE_OPTION)
+					        {
+					        	String logpath = chooser.getSelectedFile().getPath();
+								chooser = new JFileChooser();
+								chooser.setCurrentDirectory(workingDirectory);
+								chooser.setDialogTitle("Choose Repo Directory");
+								chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+								val = chooser.showOpenDialog(null);
+								if(val == JFileChooser.APPROVE_OPTION)
+								{
+									Preprocessor preprocessor = new Preprocessor(logpath,chooser.getSelectedFile().getPath());
+								}
+					        }
+							
 						}
 					});
 					
