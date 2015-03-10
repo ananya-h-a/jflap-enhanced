@@ -44,6 +44,7 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import enhanced.AggregatorAnalysisEngine;
 import enhanced.AnalysisEngine;
 import enhanced.Preprocessor;
 import enhanced.ViewAttempts;
@@ -386,12 +387,14 @@ public class NewAction extends RestrictedAction {
 						JButton button4 = new JButton("Analyze logs");
 						JButton button5 = new JButton("View Attempts");
 						JButton button6 = new JButton("Preprocess");
+						JButton button7 = new JButton("Velocity Curve");
 						frame.add(button1);
 						//frame.add(button2);
 						//frame.add(button3);
 						frame.add(button4);
 						frame.add(button5);
 						frame.add(button6);
+						frame.add(button7);
 					button1.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							FiniteStateAutomaton fsa = new FiniteStateAutomaton();
@@ -520,6 +523,40 @@ public class NewAction extends RestrictedAction {
 								if(val == JFileChooser.APPROVE_OPTION)
 								{
 									Preprocessor preprocessor = new Preprocessor(logpath,chooser.getSelectedFile().getPath());
+								}
+								
+					        }
+							
+						}
+					});
+					
+					
+					button7.addActionListener(new ActionListener() 
+					{
+						
+						@Override
+						public void actionPerformed(ActionEvent arg0) 
+						{
+							// TODO Auto-generated method stub
+							File workingDirectory = new File(System.getProperty("user.dir"));
+							JFileChooser chooser = new JFileChooser();
+							chooser.setCurrentDirectory(workingDirectory);
+					        FileNameExtensionFilter xmlfilter = new FileNameExtensionFilter("xml files (*.xml)", "xml");
+					        chooser.setFileFilter(xmlfilter);
+					        chooser.setDialogTitle("Open Trace File");
+					        int val = chooser.showOpenDialog(null);
+					        if(val == JFileChooser.APPROVE_OPTION)
+					        {        	
+					        	AggregatorAnalysisEngine engine = null;
+								try 
+								{
+									engine = new AggregatorAnalysisEngine(chooser.getSelectedFile());
+									
+								} 
+								catch (Exception e) 
+								{
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 					        }
 							

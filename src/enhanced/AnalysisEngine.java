@@ -199,6 +199,8 @@ public class AnalysisEngine
 		return combinedAlphabet;
 	}
 	
+	
+	
 	/*private FiniteStateAutomaton getMinimizedAutomaton(FiniteStateAutomaton automaton)
 	{
 		minimizer.initializeMinimizer();
@@ -218,5 +220,10 @@ public class AnalysisEngine
 		return automaton;
 		
 	}*/
+	public List<Double> getTSList()
+	{
+		return ts;
+	}
+	
 	
 }

@@ -29,7 +29,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.sun.media.jfxmedia.events.NewFrameEvent;
+
 
 public class Preprocessor
 {
@@ -97,10 +97,10 @@ public class Preprocessor
 		    			return 0;
 		    		}
 				});
-		    	
+		    	List<Integer> solved = new ArrayList<Integer>();
 		    	for(File trace : toProcess)
 		    	{
-		    		List<Integer> solved = new ArrayList<Integer>();
+		    		
 		    		try 
 		    		{	
 		    			Document doc = dBuilder.parse(trace);
@@ -110,25 +110,27 @@ public class Preprocessor
 	    				{
 	    					questionNumber = Integer.parseInt(q.getElementsByTagName("Index").item(0).getTextContent());
 	    				}
+	    				System.out.println("Processing "+questionNumber+":"+username+":"+trace.getName());
+	    				
 	    				if(solved.contains(questionNumber))
 	    				{
-	    					//System.out.println("Ignoring "+questionNumber+":"+username+":"+trace.getName());
+	    					System.out.println("Ignoring "+questionNumber+":"+username+":"+trace.getName());
 	    					continue;
 	    				}
 		    			NodeList attempts = doc.getElementsByTagName("TestAgainstSolution");
 		    			if(attempts.getLength() == 0)
 		    			{
-		    				writeFileToRepository(repopath,doc,username+"_"+trace.getName());
+		    				writeFileToRepository(repopath,doc,username+"_"+questionNumber+"_"+trace.getName());
 		    				continue;
 		    			}
 		    			Element finalAttempt = (Element)attempts.item(attempts.getLength()-1);
 		    			int status = Integer.parseInt(finalAttempt.getElementsByTagName("Status").item(0).getTextContent());
 		    			if(status > 0)
 		    			{
-		    				//System.out.println("Adding "+questionNumber+":"+username+":"+trace.getName());
+		    				System.out.println("Adding "+questionNumber+":"+username+":"+trace.getName());
 		    				solved.add(questionNumber);
 		    			}
-		    			writeFileToRepository(repopath,doc,username+"_"+trace.getName());
+		    			writeFileToRepository(repopath,doc,username+"_"+questionNumber+"_"+trace.getName());
 					} 
 		    		catch (SAXException e) 
 					{
@@ -166,7 +168,7 @@ public class Preprocessor
 			File output = new File(repoPath+System.getProperty("file.separator")+filename);
 			if(output.createNewFile())
 			{
-				System.out.println(output.getName());
+				//System.out.println(output.getName());
 				BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(output)));
 				bw.write(xmlString);
 				bw.flush();
