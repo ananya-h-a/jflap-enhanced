@@ -46,20 +46,31 @@ public class AggregatorAnalysisEngine
 		{
 			AnalysisEngine currentEngine = new AnalysisEngine(tracefile.getPath()); 
 			Map<String,List<List<Double>>> timesAndScoresMap = getTimesAndScores();
-			Map<String,Double> points = computeAggregates(timesAndScoresMap);
 			List<Double> combinedMetric = getCombinedMetric(currentEngine);
 			Visualizer visualizer = new Visualizer();
 			JFrame frame = new JFrame("Velocity Curve");
 			frame.setLayout(new GridLayout(2, 1));
+			
+			
+			Map<String,Double> points = computeAggregates(timesAndScoresMap);
 			double x = points.get("AverageTime");
 			double y = points.get("AverageMetric");
+			List<Double> xPlot = new ArrayList<Double>();
+			xPlot.add(x);
+			xPlot.add(0.0);
+			List<Double> yPlot = new ArrayList<Double>();
+			yPlot.add(0.0);
+			yPlot.add(y);
 			Plot2DPanel plot1 = visualizer.getPlot(currentEngine.getTSList(),combinedMetric, 
 					"Velocity Curve", "Time", "CombinedMetric");
-			plot1.addLinePlot("", Color.GREEN, new double [] {x,0,0} , new double [] {0,y,y}); //hack for 2 pt problem
-			plot1.addScatterPlot("",  Color.CYAN, new double [] {x,0,0} , new double [] {0,y,y});
+			plot1 = visualizer.addPlot(plot1, Color.GREEN, xPlot, yPlot, "Average Progress");
 			frame.add(plot1);
 			
-			
+			List<Double> avgOfAggregates = computeAverageOfAggregates(timesAndScoresMap,currentEngine.getTSList());
+			Plot2DPanel plot2 = visualizer.getPlot(currentEngine.getTSList(),combinedMetric, 
+					"Velocity Curve", "Time", "CombinedMetric");
+			plot2 = visualizer.addPlot(plot2, Color.GREEN, currentEngine.getTSList(), avgOfAggregates, "Average of Average Progress");
+			frame.add(plot2);
 			
 			frame.setVisible(true);
 			frame.setSize(1000, 1000);
@@ -68,9 +79,8 @@ public class AggregatorAnalysisEngine
 	}
 	private Map<String,Double> computeAggregates(Map<String,List<List<Double>>> timesAndScoresMap) throws Exception
 	{
-		List<List<Double>> scores;
 		List<Double> times = new ArrayList<Double>();
-		scores = timesAndScoresMap.get("Scores");
+		List<List<Double>> scores = timesAndScoresMap.get("Scores");
 		List<List<Double>> superTimes = timesAndScoresMap.get("Times");
 		for(List<Double> t : superTimes)
 		{
@@ -123,21 +133,62 @@ public class AggregatorAnalysisEngine
 		return averageTimeAndScoresMap;
 	}
 	
-	private List<Double> computeAverageOfAggregates(List<Double> ts) throws Exception
+	private List<Double> computeAverageOfAggregates(Map<String,List<List<Double>>> timesAndScoresMap,List<Double> ts) throws Exception
 	{
-		List<List<Double>> scores = new ArrayList<List<Double>>();
-		List <Double> times = new ArrayList<Double>();
-		File repodir = new File(repoPath);
-		File[] listOfFiles = repodir.listFiles();
-		for(File f : listOfFiles)
+		List<Double> avgmetrics = new ArrayList<Double>();
+		List<List<Double>> scores = timesAndScoresMap.get("Scores");
+		List<List<Double>> times = timesAndScoresMap.get("Times");
+		double maxScore = 0.0;
+		for(List<Double> score: scores)
 		{
-			if(f.isFile() && f.getName().split("_")[1].equals(qno))
+			for(Double d : score)
 			{
-				System.out.println(f.getName());
-				AnalysisEngine engine = new AnalysisEngine(f.getPath());
+				if(d > maxScore)
+				{
+					maxScore = d;
+				}
 			}
 		}
-		return null;
+		double lowerLimit = 0;
+		for(Double time : ts)
+		{
+			double totalScore = 0;
+			int count = 0;
+			for(int i =0; i<scores.size();i++)
+			{
+				List<Double> scoreVector = scores.get(i);
+				List<Double> timeVector = times.get(i);
+				if(scoreVector.size() == 0)
+				{
+					totalScore+= maxScore;
+					count += 1;
+				}
+				else 
+				{
+					// now processing for the ones that have already been finished before this interval
+					if(scoreVector.get(scoreVector.size()-1) == 0.0 && 
+							timeVector.get(timeVector.size()-1) < lowerLimit)
+					{
+						count+=1;
+					}
+					
+					// rest
+					for(int j=0; j<scoreVector.size();j++)
+					{
+						double timeStamp = timeVector.get(j);
+						if(timeStamp > lowerLimit && timeStamp <= time)
+						{
+							totalScore+= scoreVector.get(j);
+							count+= 1;
+						}
+					}
+				}
+			}
+			lowerLimit = time;
+			avgmetrics.add(totalScore/count);
+		}
+		
+		return avgmetrics;
 	}
 	private List<Double> getCombinedMetric(AnalysisEngine engine)
 	{
