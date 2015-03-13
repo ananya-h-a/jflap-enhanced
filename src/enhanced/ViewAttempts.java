@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import automata.fsa.FiniteStateAutomaton;
 
@@ -23,6 +24,11 @@ public class ViewAttempts
 		frame.setLayout(new GridLayout(0,1));
 		frame.setVisible(true);
 		frame.setSize(350, 225);
+		if(attempts.size() == 0)
+		{
+			JOptionPane.showMessageDialog(null, "No attempts made");
+			return;
+		}
 		for(int i=0;i<attempts.size();i++)
 		{
 			frame.add(createButton(i,attempts.get(i)));

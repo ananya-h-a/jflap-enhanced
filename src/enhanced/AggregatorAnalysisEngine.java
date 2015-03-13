@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.math.plot.Plot2DPanel;
 
@@ -39,7 +40,7 @@ public class AggregatorAnalysisEngine
 	{
 		if(attempts.size() == 0)
 		{
-			// What should we do ??
+			JOptionPane.showMessageDialog(null, "No attempts made");
 			return;
 		}
 		else
@@ -166,12 +167,11 @@ public class AggregatorAnalysisEngine
 				else 
 				{
 					// now processing for the ones that have already been finished before this interval
-					if(scoreVector.get(scoreVector.size()-1) == 0.0 && 
-							timeVector.get(timeVector.size()-1) < lowerLimit)
+					if(timeVector.get(timeVector.size()-1) < lowerLimit)
 					{
 						count+=1;
+						totalScore += scoreVector.get(scoreVector.size()-1);
 					}
-					
 					// rest
 					for(int j=0; j<scoreVector.size();j++)
 					{

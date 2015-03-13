@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import org.math.plot.Plot2DPanel;
 
@@ -165,6 +166,7 @@ public class AnalysisEngine
 	{
 		if(attempts.size() <= 0)
 		{
+			JOptionPane.showMessageDialog(null, "No attempts made");
 			return;
 		}
 		Visualizer visualizer = new Visualizer();
