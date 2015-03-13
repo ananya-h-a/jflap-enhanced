@@ -551,6 +551,7 @@ public class NewAction extends RestrictedAction {
 								try 
 								{
 									engine = new AggregatorAnalysisEngine(chooser.getSelectedFile());
+									engine.plotMetrics();
 									
 								} 
 								catch (Exception e) 
