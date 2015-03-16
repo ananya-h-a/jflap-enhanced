@@ -41,6 +41,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -388,6 +389,7 @@ public class NewAction extends RestrictedAction {
 						JButton button5 = new JButton("View Attempts");
 						JButton button6 = new JButton("Preprocess");
 						JButton button7 = new JButton("Velocity Curve");
+						JButton button8 = new JButton("Analyze Student");
 						frame.add(button1);
 						//frame.add(button2);
 						//frame.add(button3);
@@ -395,6 +397,7 @@ public class NewAction extends RestrictedAction {
 						frame.add(button5);
 						frame.add(button6);
 						frame.add(button7);
+						frame.add(button8);
 					button1.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							FiniteStateAutomaton fsa = new FiniteStateAutomaton();
@@ -561,6 +564,40 @@ public class NewAction extends RestrictedAction {
 								}
 					        }
 							
+						}
+					});
+					
+					button8.addActionListener(new ActionListener() 
+					{
+						
+						@Override
+						public void actionPerformed(ActionEvent arg0) 
+						{
+							JFrame userFrame = new JFrame();
+							final JTextField userName = new JTextField("Enter username");
+							userFrame.add(userName);
+							userFrame.setLocation(300,100);
+							userFrame.setLayout(new GridLayout(0,1));
+							userFrame.setVisible(true);
+							userFrame.setSize(100, 50);
+							userFrame.setResizable(false);
+							
+							userName.addActionListener(new ActionListener() 
+							{
+								
+								@Override
+								public void actionPerformed(ActionEvent arg0) 
+								{
+									// TODO Auto-generated method stub
+									String username = userName.getText().trim();
+									if(username==null || username.equals("")|| username.equals("Enter username"))
+									{
+										JOptionPane.showMessageDialog(null, "Please enter a username");
+										return;
+									}
+									
+								}
+							});
 						}
 					});
 					

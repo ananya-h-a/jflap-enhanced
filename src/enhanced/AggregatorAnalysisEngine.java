@@ -140,12 +140,13 @@ public class AggregatorAnalysisEngine
 				}
 				else 
 				{
+					/*
 					// now processing for the ones that have already been finished before this interval
 					if(timeVector.get(timeVector.size()-1) < lowerLimit)
 					{
 						count+=1;
 						totalScore += scoreVector.get(scoreVector.size()-1);
-					}
+					}*/
 					// rest
 					for(int j=0; j<scoreVector.size();j++)
 					{
@@ -158,7 +159,7 @@ public class AggregatorAnalysisEngine
 					}
 				}
 			}
-			lowerLimit = time;
+			//lowerLimit = time;
 			avgmetrics.add(totalScore/count);
 		}
 		
@@ -185,7 +186,7 @@ public class AggregatorAnalysisEngine
 		File[] listOfFiles = repodir.listFiles();
 		for(File f : listOfFiles)
 		{
-			if(f.isFile() && f.getName().split("_")[1].equals(qno))
+			if(f.isFile() && f.getName().split("_")[1].equals(qno) && !f.getName().equals(tracefile.getName()))
 			{
 				System.out.println(f.getName());
 				AnalysisEngine engine = new AnalysisEngine(f.getPath());
