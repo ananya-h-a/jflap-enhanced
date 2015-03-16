@@ -56,12 +56,13 @@ public class AggregatorAnalysisEngine
 			Map<String,Double> points = computeAggregates(timesAndScoresMap);
 			double x = points.get("AverageTime");
 			double y = points.get("AverageMetric");
+			double z = points.get("CorrectTime");
 			List<Double> xPlot = new ArrayList<Double>();
 			xPlot.add(x);
-			xPlot.add(0.0);
+			xPlot.add(z);
 			List<Double> yPlot = new ArrayList<Double>();
-			yPlot.add(0.0);
 			yPlot.add(y);
+			yPlot.add(0.0);
 			Plot2DPanel plot1 = visualizer.getPlot(currentEngine.getTSList(),combinedMetric, 
 					"Velocity Curve", "Time", "CombinedMetric");
 			plot1 = visualizer.addPlot(plot1, Color.GREEN, xPlot, yPlot, "Average Progress");
@@ -80,57 +81,41 @@ public class AggregatorAnalysisEngine
 	}
 	private Map<String,Double> computeAggregates(Map<String,List<List<Double>>> timesAndScoresMap) throws Exception
 	{
-		List<Double> times = new ArrayList<Double>();
 		List<List<Double>> scores = timesAndScoresMap.get("Scores");
-		List<List<Double>> superTimes = timesAndScoresMap.get("Times");
-		for(List<Double> t : superTimes)
-		{
-			double time = 0.0;
-			if(t.size() > 0)
-			{
-				time = t.get(t.size()-1);
-			}
-			times.add(time);
-		}
-		int zeroCount = 0;
-		double maxTime = 0;
-		double maxMetric = 0;
-		double totalTime = 0;
-		double totalMetric = 0;
+		List<List<Double>> times = timesAndScoresMap.get("Times");
+		
+		double totalCorrectTime = 0;
+		double totalFirstMetric = 0;
+		double totalFirstTime = 0;
+		double correctAttempts = 0;
 		int count = 0;
 		for(int i = 0; i< scores.size();i++)
 		{
 			List<Double> l = scores.get(i);
+			List<Double> t = times.get(i);
 			if(l.size() == 0)
 			{
-				count += 1;
-				zeroCount += 1;
+				//Ignoring for now. Shouldn't be reached
+				continue;
 			}
 			else
 			{
-				double time = times.get(i);
-				totalTime+=time;
-				if(time > maxTime)
+				count+=1;
+				totalFirstMetric+= l.get(0);
+				totalFirstTime += t.get(0);
+				double lastScore = l.get(l.size()-1);
+				if(lastScore == 0)
 				{
-					maxTime = time;
+					totalCorrectTime+= t.get(t.size()-1);
+					correctAttempts +=1;
 				}
-				for(Double d : l)
-				{
-					count+=1;
-					totalMetric+=d;
-					if(d > maxMetric)
-					{
-						maxMetric = d;
-					}
-				}
+				
 			}
 		}
-		totalMetric += maxMetric * zeroCount;
-		totalTime += maxTime * zeroCount;
 		Map<String,Double> averageTimeAndScoresMap = new HashMap<String,Double>();
-		
-		averageTimeAndScoresMap.put("AverageMetric",totalMetric/count);
-		averageTimeAndScoresMap.put("AverageTime",totalTime/times.size());
+		averageTimeAndScoresMap.put("AverageMetric",totalFirstMetric/count);
+		averageTimeAndScoresMap.put("AverageTime",totalFirstTime/count);
+		averageTimeAndScoresMap.put("CorrectTime",totalCorrectTime/correctAttempts);
 		return averageTimeAndScoresMap;
 	}
 	
@@ -139,17 +124,6 @@ public class AggregatorAnalysisEngine
 		List<Double> avgmetrics = new ArrayList<Double>();
 		List<List<Double>> scores = timesAndScoresMap.get("Scores");
 		List<List<Double>> times = timesAndScoresMap.get("Times");
-		double maxScore = 0.0;
-		for(List<Double> score: scores)
-		{
-			for(Double d : score)
-			{
-				if(d > maxScore)
-				{
-					maxScore = d;
-				}
-			}
-		}
 		double lowerLimit = 0;
 		for(Double time : ts)
 		{
@@ -161,8 +135,8 @@ public class AggregatorAnalysisEngine
 				List<Double> timeVector = times.get(i);
 				if(scoreVector.size() == 0)
 				{
-					totalScore+= maxScore;
-					count += 1;
+					//Shouldn't be reached
+					continue;
 				}
 				else 
 				{
@@ -219,12 +193,9 @@ public class AggregatorAnalysisEngine
 				List<Double> time ;		
 				if(engine.getTSList().size() == 0)
 				{
-					time = new ArrayList<Double>();
+					continue;
 				}
-				else
-				{
-					time = engine.getTSList();
-				}
+				time = engine.getTSList();
 				scores.add(getCombinedMetric(engine));
 				times.add(time);
 				
