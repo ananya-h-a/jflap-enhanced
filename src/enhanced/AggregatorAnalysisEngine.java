@@ -79,7 +79,7 @@ public class AggregatorAnalysisEngine
 			
 		}
 	}
-	private Map<String,Double> computeAggregates(Map<String,List<List<Double>>> timesAndScoresMap) throws Exception
+	public Map<String,Double> computeAggregates(Map<String,List<List<Double>>> timesAndScoresMap) throws Exception
 	{
 		List<List<Double>> scores = timesAndScoresMap.get("Scores");
 		List<List<Double>> times = timesAndScoresMap.get("Times");
@@ -119,7 +119,7 @@ public class AggregatorAnalysisEngine
 		return averageTimeAndScoresMap;
 	}
 	
-	private List<Double> computeAverageOfAggregates(Map<String,List<List<Double>>> timesAndScoresMap,List<Double> ts) throws Exception
+	public List<Double> computeAverageOfAggregates(Map<String,List<List<Double>>> timesAndScoresMap,List<Double> ts) throws Exception
 	{
 		List<Double> avgmetrics = new ArrayList<Double>();
 		List<List<Double>> scores = timesAndScoresMap.get("Scores");
@@ -165,7 +165,7 @@ public class AggregatorAnalysisEngine
 		
 		return avgmetrics;
 	}
-	private List<Double> getCombinedMetric(AnalysisEngine engine)
+	public List<Double> getCombinedMetric(AnalysisEngine engine)
 	{
 		List<Double> metric1 = engine.generateCPMetric();
 		List<Double> metric2 = engine.generateNoDistinctStatesMetric();
@@ -178,7 +178,7 @@ public class AggregatorAnalysisEngine
 		return weightedMetric;
 	}
 	
-	private Map<String,List<List<Double>>> getTimesAndScores() throws Exception
+	public Map<String,List<List<Double>>> getTimesAndScores() throws Exception
 	{
 		List<List<Double>> scores = new ArrayList<List<Double>>();
 		List<List<Double>> times = new ArrayList<List<Double>>();

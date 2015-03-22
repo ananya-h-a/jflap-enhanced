@@ -48,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import enhanced.AggregatorAnalysisEngine;
 import enhanced.AnalysisEngine;
 import enhanced.Preprocessor;
+import enhanced.UserAnalyzer;
 import enhanced.ViewAttempts;
 import enhanced.XMLReader;
 import enhanced.action.CryptoException;
@@ -595,7 +596,25 @@ public class NewAction extends RestrictedAction {
 										JOptionPane.showMessageDialog(null, "Please enter a username");
 										return;
 									}
-									
+									File workingDirectory = new File(System.getProperty("user.dir"));
+									JFileChooser chooser = new JFileChooser();
+									chooser.setCurrentDirectory(workingDirectory);
+									chooser.setDialogTitle("Choose Repo Directory");
+									chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+									int val = chooser.showOpenDialog(null);
+									if(val == JFileChooser.APPROVE_OPTION)
+									{
+										UserAnalyzer userAnalyzer = new UserAnalyzer(username,chooser.getSelectedFile());
+										try
+										{
+											userAnalyzer.displayPerformance();
+										} 
+										catch (Exception e) 
+										{
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									}
 								}
 							});
 						}
