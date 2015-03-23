@@ -27,7 +27,9 @@ public class XMLReader {
 	private Document doc;
 	private StatePlacer placer;
 	private long startTime;
+	private long endTime;
 	private TreeMap <Long ,FiniteStateAutomaton> attemptsMap;
+	private boolean isCorrect;
 	public XMLReader(String path)
 	{
 		File fXmlFile = new File(path);
@@ -57,6 +59,9 @@ public class XMLReader {
 		doc.getDocumentElement().normalize();
 		Element element = (Element) doc.getElementsByTagName("windowstarttime").item(0);
 		startTime = Long.parseLong(element.getTextContent());
+		element = (Element) doc.getElementsByTagName("windowclosingtime").item(0);
+		endTime = Long.parseLong(element.getTextContent());
+		isCorrect = false;
 		this.setAttemptsMap();
 	}
 	
@@ -116,6 +121,10 @@ public class XMLReader {
 			int status = Integer.parseInt(element.getElementsByTagName("Status").item(0).getTextContent());
 			if(status >= 0)
 			{
+				if(status>0 && i== testAgainstSolution.getLength()-1)
+				{
+					isCorrect = true;
+				}
 				long ts = getTimeStamp(node);
 				attemptsMap.put(ts,constructAutomaton(automaton));
 			}
@@ -172,5 +181,26 @@ public class XMLReader {
 	public long getStartTime()
 	{
 		return startTime;
+	}
+	
+	public long getEndTime()
+	{
+		return endTime;
+	}
+	public boolean getIsCorrect()
+	{
+		return isCorrect;
+	}
+	
+	public int getNoOfViewPossibleStrings()
+	{
+		NodeList nodelist =  doc.getElementsByTagName("viewPossibleStrings");
+		return nodelist.getLength();
+	}
+	
+	public int getNoOfTestInputs()
+	{
+		NodeList nodelist =  doc.getElementsByTagName("testInput");
+		return nodelist.getLength();
 	}
 }

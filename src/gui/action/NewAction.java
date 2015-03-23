@@ -48,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import enhanced.AggregatorAnalysisEngine;
 import enhanced.AnalysisEngine;
 import enhanced.Preprocessor;
+import enhanced.ReportGenerator;
 import enhanced.UserAnalyzer;
 import enhanced.ViewAttempts;
 import enhanced.XMLReader;
@@ -391,6 +392,7 @@ public class NewAction extends RestrictedAction {
 						JButton button6 = new JButton("Preprocess");
 						JButton button7 = new JButton("Velocity Curve");
 						JButton button8 = new JButton("Analyze Student");
+						JButton button9 = new JButton("Generate Report");
 						frame.add(button1);
 						//frame.add(button2);
 						//frame.add(button3);
@@ -399,6 +401,7 @@ public class NewAction extends RestrictedAction {
 						frame.add(button6);
 						frame.add(button7);
 						frame.add(button8);
+						frame.add(button9);
 					button1.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							FiniteStateAutomaton fsa = new FiniteStateAutomaton();
@@ -617,6 +620,26 @@ public class NewAction extends RestrictedAction {
 									}
 								}
 							});
+						}
+					});
+					
+					button9.addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent arg0)
+						{
+							// TODO Auto-generated method stub
+							File workingDirectory = new File(System.getProperty("user.dir"));
+							JFileChooser chooser = new JFileChooser();
+							chooser.setCurrentDirectory(workingDirectory);
+							chooser.setDialogTitle("Choose Log Directory");
+							chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							int val = chooser.showOpenDialog(null);
+					        if(val == JFileChooser.APPROVE_OPTION)
+					        {
+					        	ReportGenerator generator = new ReportGenerator(chooser.getSelectedFile());
+					        	generator.generateReport();
+					        }
 						}
 					});
 					
