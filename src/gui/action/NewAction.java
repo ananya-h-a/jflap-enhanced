@@ -48,6 +48,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import enhanced.AggregatorAnalysisEngine;
 import enhanced.AnalysisEngine;
 import enhanced.Preprocessor;
+import enhanced.QuestionAnalyzer;
 import enhanced.ReportGenerator;
 import enhanced.UserAnalyzer;
 import enhanced.ViewAttempts;
@@ -393,6 +394,8 @@ public class NewAction extends RestrictedAction {
 						JButton button7 = new JButton("Velocity Curve");
 						JButton button8 = new JButton("Analyze Student");
 						JButton button9 = new JButton("Generate Report");
+						JButton button10 = new JButton("Questions analysis");
+						
 						frame.add(button1);
 						//frame.add(button2);
 						//frame.add(button3);
@@ -402,6 +405,7 @@ public class NewAction extends RestrictedAction {
 						frame.add(button7);
 						frame.add(button8);
 						frame.add(button9);
+						frame.add(button10);
 					button1.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							FiniteStateAutomaton fsa = new FiniteStateAutomaton();
@@ -639,6 +643,31 @@ public class NewAction extends RestrictedAction {
 					        {
 					        	ReportGenerator generator = new ReportGenerator(chooser.getSelectedFile());
 					        	generator.generateReport();
+					        }
+						}
+					});
+					
+					button10.addActionListener(new ActionListener() {
+						
+						@Override
+						public void actionPerformed(ActionEvent arg0) 
+						{
+							// TODO Auto-generated method stub
+							File workingDirectory = new File(System.getProperty("user.dir"));
+							JFileChooser chooser = new JFileChooser();
+							chooser.setCurrentDirectory(workingDirectory);
+							chooser.setDialogTitle("Choose Log Directory");
+							chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+							int val = chooser.showOpenDialog(null);
+					        if(val == JFileChooser.APPROVE_OPTION)
+					        {
+					        	QuestionAnalyzer analyzer = new QuestionAnalyzer(chooser.getSelectedFile());
+					        	try {
+									analyzer.display();
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 					        }
 						}
 					});
