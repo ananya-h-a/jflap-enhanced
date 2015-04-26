@@ -203,4 +203,19 @@ public class XMLReader {
 		NodeList nodelist =  doc.getElementsByTagName("testInput");
 		return nodelist.getLength();
 	}
+	
+	public List <Double> getTimeStampsOfElement(String tagname)
+	{
+		List<Double> tsList = new ArrayList<Double>();
+		NodeList nodelist =  doc.getElementsByTagName(tagname);
+		for(int i=0;i<nodelist.getLength();i++)
+		{
+			Node n = nodelist.item(i);
+			double ts = ((double)getTimeStamp(n) - getStartTime())/1000;
+			tsList.add(ts);
+		}
+		return tsList;
+	}
+
+	
 }

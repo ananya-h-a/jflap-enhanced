@@ -642,7 +642,12 @@ public class NewAction extends RestrictedAction {
 					        if(val == JFileChooser.APPROVE_OPTION)
 					        {
 					        	ReportGenerator generator = new ReportGenerator(chooser.getSelectedFile());
-					        	generator.generateReport();
+					        	try {
+									generator.generateReport();
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 					        }
 						}
 					});

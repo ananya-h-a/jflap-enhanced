@@ -76,7 +76,7 @@ public class TestDFAAction {
 
 		Random rand = new Random();
 		int face = 1 + rand.nextInt(limit);
-		//int face = 9;
+		//int face = 1;
 		String fileNameIndex = new Integer(face).toString();
 		try{
 		File f = getDFAResource(fileNameIndex);

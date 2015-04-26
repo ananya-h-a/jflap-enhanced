@@ -464,12 +464,7 @@ public class ConvertFSAToREActionNew {
 						time.appendChild(doc.createTextNode(new Integer(
 								(int) elapsedTimesec).toString()));
 
-						if (fsa.nfaDrawn) {
-							Element nfaDrawn = doc.createElement("nfaDrawn");
-							nfaDrawn.appendChild(doc.createTextNode("true"));
-							drawDfa.appendChild(nfaDrawn);
-							dfaList.add("NFA was Drawn");
-						}
+						
 						for (String s : fsa.flowList)
 							dfaList.add(s);
 

@@ -233,7 +233,12 @@ import automata.graph.layout.VertexMover;
                                  (automata.fsa.FiniteStateAutomaton) frame
                                  .getEnvironment().getObject(),
                                  frame.getEnvironment());
-                              dfa.compareDFAAnswer();
+                              try {
+								dfa.compareDFAAnswer();
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
                            
                            }
                         });

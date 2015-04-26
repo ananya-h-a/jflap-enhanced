@@ -17,7 +17,10 @@ package enhanced.action;
 
 import enhanced.action.ConvertFSAToREActionNew;
 import enhanced.regular.CustomConvertPane;
+import enhanced.AnalysisEngine;
 import enhanced.CustomUtilities;
+import enhanced.JFlapProgressBar;
+import enhanced.UserAnalyzer;
 import gui.action.NewAction;
 import gui.action.NondeterminismAction;
 import gui.environment.AutomatonEnvironment;
@@ -36,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -77,7 +81,7 @@ public class CompareDFAAction {
 	}
 
 	
-	public void compareDFAAnswer(){
+	public void compareDFAAnswer() throws Exception{
 	
 		// Set up our automaton.
 		Automaton automaton = (Automaton) environment
@@ -184,7 +188,7 @@ public class CompareDFAAction {
 
 		
 	
-	private void prepareStringsAndDisplay(){
+	private void prepareStringsAndDisplay() throws Exception{
 		final FiniteStateAutomaton userAutomaton = (FiniteStateAutomaton) environment
 				.getObject();
 		System.out.println(userAutomaton.toString());
@@ -332,8 +336,15 @@ public class CompareDFAAction {
 			}
 		});
 		main.add(jp);
+		
+		AnalysisEngine engine = new AnalysisEngine((FiniteStateAutomaton)OpenFileFromRepositoryAction.openedAutomaton.clone());
+		
+		FiniteStateAutomaton attempt =  (FiniteStateAutomaton)userAutomaton.clone();
+		int score =(int) (engine.computeNormalizedVectorDistance(attempt)*100);
+		JFlapProgressBar.dispProgressBar(main);
+		JFlapProgressBar.setProgress(score);
 		JOptionPane.showMessageDialog(
-				Universe.frameForEnvironment(environment),main,"ERROR",JOptionPane.ERROR_MESSAGE);
+				Universe.frameForEnvironment(environment),main,"Wrong Answer",JOptionPane.ERROR_MESSAGE);
 		
       }
 	

@@ -32,9 +32,8 @@ public class QuestionAnalyzer
 	public void display() throws Exception
 	{
 	
-		Map<String,Map<Double,Double>> questionMap = new HashMap<String, Map<Double,Double>>();
-		List<File> filesToProcess = getUserFiles();
-		if(filesToProcess.size() == 0)
+		Map<String,Map<Double,Double>> questionMap = calculateQuestionMap();
+		if(questionMap == null)
 		{
 			JOptionPane.showMessageDialog(null, "No traces exist. Please check if you have the right repository");
 			return;
@@ -45,31 +44,6 @@ public class QuestionAnalyzer
 		Plot2DPanel plot = visualizer.getLinePlot(new ArrayList<Double>(),new ArrayList<Double>(), 
 				"Velocity Curve", "Time", "CombinedMetric");
 		
-		for(File f: filesToProcess)
-		{
-			AnalysisEngine currentEngine = new AnalysisEngine(f.getPath()); 
-			List<Double> tsList = currentEngine.getTSList();
-			if(tsList.size() == 0)
-			{
-				continue;
-			}
-			AggregatorAnalysisEngine aggregatorAnalysisEngine = new AggregatorAnalysisEngine(f);
-			List<Double> combinedMetric = aggregatorAnalysisEngine.getCombinedMetric(currentEngine);
-			String question_no = f.getName().split("_")[1].trim();
-			if(!questionMap.containsKey(question_no))
-			{
-				HashMap<Double,Double> timeMetricMap = new HashMap<Double,Double>();
-				questionMap.put(question_no, timeMetricMap);
-			}
-			Map<Double, Double> currentTimeMetricMap = questionMap.get(question_no);
-			for(int i=0;i<combinedMetric.size();i++)
-			{
-				double ts = tsList.get(i);
-				double cm = combinedMetric.get(i);
-				currentTimeMetricMap.put(ts, cm);
-			}
-			questionMap.put(question_no, currentTimeMetricMap);
-		}
 		for(String q : questionMap.keySet())
 		{
 			Map<Double, Double> timeMetricMap = questionMap.get(q);
@@ -98,12 +72,47 @@ public class QuestionAnalyzer
 				y.add(score);
 				x.add((double)i);
 			}
-			System.out.println("Adding for "+q+"x:"+x+"y:"+y);
+			//System.out.println("Adding for "+q+"x:"+x+"y:"+y);
 			plot = visualizer.addLinePlot(plot, getRandomColor(), x, y, q);
 		}
 		frame.add(plot);
 	}
 	
+	public Map<String,Map<Double,Double>>  calculateQuestionMap() throws Exception
+	{
+		Map<String,Map<Double,Double>> questionMap = new HashMap<String, Map<Double,Double>>();
+		List<File> filesToProcess = getUserFiles();
+		if(filesToProcess.size() == 0)
+		{
+			return null;
+		}
+		for(File f: filesToProcess)
+		{
+			AnalysisEngine currentEngine = new AnalysisEngine(f.getPath()); 
+			List<Double> tsList = currentEngine.getTSList();
+			if(tsList.size() == 0)
+			{
+				continue;
+			}
+			AggregatorAnalysisEngine aggregatorAnalysisEngine = new AggregatorAnalysisEngine(f);
+			List<Double> combinedMetric = aggregatorAnalysisEngine.getCombinedMetric(currentEngine);
+			String question_no = f.getName().split("_")[1].trim();
+			if(!questionMap.containsKey(question_no))
+			{
+				HashMap<Double,Double> timeMetricMap = new HashMap<Double,Double>();
+				questionMap.put(question_no, timeMetricMap);
+			}
+			Map<Double, Double> currentTimeMetricMap = questionMap.get(question_no);
+			for(int i=0;i<combinedMetric.size();i++)
+			{
+				double ts = tsList.get(i);
+				double cm = combinedMetric.get(i);
+				currentTimeMetricMap.put(ts, cm);
+			}
+			questionMap.put(question_no, currentTimeMetricMap);
+		}
+		return questionMap;
+	}
 	private List<File> getUserFiles()
 	{
 		List<File> filesToProcess = new ArrayList<File>();

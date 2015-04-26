@@ -2,10 +2,13 @@ package enhanced;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.opencsv.CSVWriter;
 
 import automata.Automaton;
 import automata.fsa.FiniteStateAutomaton;
@@ -18,88 +21,77 @@ public class ReportGenerator
 		this.repo = repo;
 	}
 	
-	public void generateReport()
+	public void generateReport() throws Exception
 	{
+		
 		Map<String,Map> questionMap = new HashMap<String,Map>(); 
 		File[] listOfFiles = repo.listFiles();
+		List<AttemptRepresentation> attempts = new ArrayList<AttemptRepresentation>();
 		for(File f: listOfFiles)
 		{
+			String userName = f.getName().split("_")[0].trim();
 			String questionNo = f.getName().split("_")[1].trim();
-			if(!questionMap.containsKey(questionNo))
-			{
-				Map emptyMap = new HashMap<String,Double>();
-				emptyMap.put("Total Time", 0.0);
-				emptyMap.put("Total Attempts", 0.0);
-				emptyMap.put("Correct Attempts", 0.0);
-				emptyMap.put("Total Hints", 0.0);
-				questionMap.put(questionNo, emptyMap);
-			}
-			Map<String,Double> currentMetrics = questionMap.get(questionNo);
-			XMLReader reader = new XMLReader(f.getPath());
-			List<FiniteStateAutomaton> attempts = reader.getAutomatonsFromXML(); 
-			if(attempts.size() == 0)
+			AnalysisEngine currentEngine = new AnalysisEngine(f.getPath()); 
+			XMLReader xmlreader = currentEngine.getXmlReader();
+			List<Double> tsList = currentEngine.getTSList();
+			if(tsList.size() == 0)
 			{
 				continue;
 			}
-			double totalTime = currentMetrics.get("Total Time");
-			totalTime+= (reader.getEndTime() - reader.getStartTime())/1000.0;
-			currentMetrics.put("Total Time", totalTime);
-			double totalAttempts = currentMetrics.get("Total Attempts");
-			totalAttempts+= attempts.size();
-			currentMetrics.put("Total Attempts", totalAttempts);
-			if(reader.getIsCorrect())
+			int noOfViewPossibleStrings, noOfTestInputs, noOfAcceptStringClicks, noOfRejectStringClicks;
+			List<Double> viewPossibleStringsTsList = xmlreader.getTimeStampsOfElement("viewPossibleStrings");
+			List<Double> testInputTsList = xmlreader.getTimeStampsOfElement("testInput");
+			List<Double> acceptStringClickTsList = xmlreader.getTimeStampsOfElement("AcceptStringClick");
+			List<Double> rejectStringClickTsList = xmlreader.getTimeStampsOfElement("RejectStringClick");
+			AggregatorAnalysisEngine aggregatorAnalysisEngine = new AggregatorAnalysisEngine(f);
+			List<Double> combinedMetric = aggregatorAnalysisEngine.getCombinedMetric(currentEngine);
+			for(int i=0;i<combinedMetric.size();i++)
 			{
-				double correctAttempts = currentMetrics.get("Correct Attempts");
-				correctAttempts+=1;
-				currentMetrics.put("Correct Attempts", correctAttempts);
+				double metric = combinedMetric.get(i);
+				double timestamp = tsList.get(i);
+				double prevTimeStamp = 0;
+				if(i!=0)
+				{
+					prevTimeStamp = tsList.get(i-1);
+				}
+				noOfViewPossibleStrings = getCount(viewPossibleStringsTsList, prevTimeStamp, timestamp);
+				noOfTestInputs = getCount(testInputTsList,prevTimeStamp,timestamp);
+				noOfAcceptStringClicks = getCount(acceptStringClickTsList, prevTimeStamp, timestamp);
+				noOfRejectStringClicks = getCount(rejectStringClickTsList, prevTimeStamp, timestamp);
+				AttemptRepresentation attempt = new AttemptRepresentation(userName, questionNo, timestamp, metric, noOfViewPossibleStrings, noOfTestInputs, noOfAcceptStringClicks, noOfRejectStringClicks);
+				attempts.add(attempt);
 			}
-			double hints = reader.getNoOfViewPossibleStrings()  + reader.getNoOfTestInputs();
-			if(hints > 0)
-			{
-
-				double totalHints = currentMetrics.get("Total Hints");
-				totalHints+=hints;
-				currentMetrics.put("Total Hints", totalHints);
-			}
+			
 		}
-		writeCSV(questionMap);
+		writeCSV(attempts);
 	}
 	
-	private void writeCSV(Map<String,Map> questionMap)
+	private int  getCount(List<Double> ts, double start,double end)
 	{
-		final String COMMA_DELIMITER = ",";
-		final String NEW_LINE_SEPARATOR = "\n";
-	    final String FILE_HEADER = "Question No,Total Time,Total Attempts,Correct Attempts,Total Hints";
-	    final String FILE_NAME = "Raw Metrics.csv";
-	    FileWriter fileWriter = null;
-	    try
-	    {
-	    	fileWriter = new FileWriter(FILE_NAME);
-	    	fileWriter.append(FILE_HEADER.toString());
-	    	fileWriter.append(NEW_LINE_SEPARATOR);
-	    	for(String questionNo : questionMap.keySet())
-	    	{
-		    	fileWriter.append(questionNo);
-                fileWriter.append(COMMA_DELIMITER);
-    			Map<String,Double> currentMetrics = questionMap.get(questionNo);
-    			fileWriter.append(currentMetrics.get("Total Time").toString());
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(currentMetrics.get("Total Attempts").toString());
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(currentMetrics.get("Correct Attempts").toString());
-                fileWriter.append(COMMA_DELIMITER);
-                fileWriter.append(currentMetrics.get("Total Hints").toString());
-                fileWriter.append(NEW_LINE_SEPARATOR);
-
-	    	}
-	    	fileWriter.flush();
-	    	fileWriter.close();
-
-	    }
-	    catch(Exception e)
-	    {
-	    	
-	    }
-	  
+		int count = 0;
+		for(Double d : ts)
+		{
+			if(d > start && d < end)
+			{
+				count+=1;
+			}
+		}
+		return count;
+	}
+	private void writeCSV(List<AttemptRepresentation> attempts) throws IOException
+	{
+		
+		final String FILE_NAME = "Metrics.csv";		
+		CSVWriter writer = new CSVWriter(new FileWriter(FILE_NAME));
+		String [] headers = "Username#Question#TimeStamp#Metric#ViewPossibleString#TestInput#AcceptString#RejectString".split("#");
+		writer.writeNext(headers);
+		for(AttemptRepresentation attempt : attempts)
+		{
+			String data = attempt.username+"#"+attempt.question+"#"+attempt.timestamp+"#"+attempt.metricScore
+					+"#"+attempt.noOfViewPossibleStrings+"#"+attempt.noOfTestInputs+"#"+attempt.noOfAcceptStringClicks
+					+"#"+attempt.noOfRejectStringClicks;
+			writer.writeNext(data.split("#"));
+		}
+		writer.close();
 	}
 }

@@ -31,9 +31,10 @@ public class AnalysisEngine
 	Set<String> alphabet;
 	private NewMinimizer minimizer;
 	private IsFinal instance;
+	private XMLReader reader;
 	public AnalysisEngine(String logFilePath) throws Exception
 	{
-		XMLReader reader = new XMLReader(logFilePath);
+		reader = new XMLReader(logFilePath);
 		attempts= reader.getAutomatonsFromXML();
 		ts = new ArrayList<Double>();
 		List<Long> temp = reader.getTimeStamps();
@@ -52,6 +53,20 @@ public class AnalysisEngine
 			alphabet.add(alpha);
 		}
 		 instance = new UnionOfDifferenceLanguage();
+	}
+	
+	public AnalysisEngine(FiniteStateAutomaton correctAutomaton) throws Exception
+	{
+		result = correctAutomaton;
+		alphabetRetriever = new FSAAlphabetRetriever();
+		minimizer = new NewMinimizer();
+		alphabet = new HashSet<String>();
+		for(String alpha : alphabetRetriever.getAlphabet(result))
+		{
+			alphabet.add(alpha);
+		}
+		 instance = new UnionOfDifferenceLanguage();
+		
 	}
 	
 	public AnalysisEngine()
@@ -85,6 +100,7 @@ public class AnalysisEngine
 		}
 		return distinctVectors.size();
 	}
+	
 	
 	public double computeVectorDistance(FiniteStateAutomaton attempt)
 	{
@@ -123,6 +139,45 @@ public class AnalysisEngine
 		}
 		double norm = Math.sqrt(sum);
 		return norm;
+		
+	}
+	public double computeNormalizedVectorDistance(FiniteStateAutomaton attempt)
+	{
+		Map<List<Integer>,Integer> vectorDictionary = new HashMap<List<Integer>,Integer>();
+		Set<String> combinedAlphabet = getCombineAlphabet(attempt);
+		VectorGenerator generator = new VectorGenerator(combinedAlphabet);
+		//FiniteStateAutomaton minimizedAttempt = getMinimizedAutomaton(attempt);
+		//FiniteStateAutomaton minimizedResult = getMinimizedAutomaton(result);
+		FiniteStateAutomaton minimizedAttempt = minimizer.getMinimizedAutomaton(attempt);
+		FiniteStateAutomaton minimizedResult = minimizer.getMinimizedAutomaton(result);
+		for(State state : minimizedResult.getStates())
+		{
+			List<Integer> vector = generator.generateVector(minimizedResult, state);
+			int count = 0;
+			if(vectorDictionary.containsKey(vector))
+			{
+				count = vectorDictionary.get(vector);
+			}
+			vectorDictionary.put(vector, count+1);
+		}
+		for(State state : minimizedAttempt.getStates())
+		{
+			List<Integer> vector = generator.generateVector(minimizedAttempt, state);
+			int count = 0;
+			if(vectorDictionary.containsKey(vector))
+			{
+				count = vectorDictionary.get(vector);
+			}
+			vectorDictionary.put(vector, count-1);
+		}
+		int n = vectorDictionary.keySet().size();
+		int sum = 0;
+		for(Integer xi : vectorDictionary.values())
+		{
+			sum += xi * xi;
+		}
+		double norm = Math.sqrt(sum);
+		return (1.0 - norm/(minimizedAttempt.getStates().length + minimizedResult.getStates().length));
 		
 	}
 	public List<Double> generateCPMetric()
@@ -191,7 +246,7 @@ public class AnalysisEngine
 		frame.setSize(1000, 1000);
 	}
 	
-	private Set<String> getCombineAlphabet(FiniteStateAutomaton attempt)
+	public Set<String> getCombineAlphabet(FiniteStateAutomaton attempt)
 	{
 		Set <String> combinedAlphabet = new HashSet<String>(alphabet);
 		for(String alpha : alphabetRetriever.getAlphabet(attempt))
@@ -227,5 +282,9 @@ public class AnalysisEngine
 		return ts;
 	}
 	
+	public XMLReader getXmlReader()
+	{
+		return this.reader;
+	}
 	
 }
